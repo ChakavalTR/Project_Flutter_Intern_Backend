@@ -5,10 +5,11 @@ async function getAllProducts(req, res) {
     try {
         const pool = await getPool();
         const result = await pool.request().query('SELECT * FROM PRODUCTS');
-        res.status(200).json(result.recordset);
+        const response = result.recordset;
+        res.status(200).json({ data: response, status: 200 });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error', status: 500 });
     }
 }
 
@@ -16,7 +17,7 @@ async function getProductById(req, res) {
     try {
         const id = parseInt(req.query.id, 10);
         if (isNaN(id)) {
-            return res.status(400).json({ message: 'Invalid id' });
+            return res.status(400).json({ message: 'Invalid id', status: 400 });
         }
 
         const pool = await getPool();
@@ -26,13 +27,13 @@ async function getProductById(req, res) {
             .query('SELECT * FROM PRODUCTS WHERE PRODUCTID = @id');
 
         if (result.recordset.length === 0) {
-            return res.status(404).json({ message: 'Product not found' });
+            return res.status(404).json({ message: 'Product not found', status: 404 });
         }
-
-        res.status(200).json(result.recordset[0]);
+        const response = result.recordset;
+        res.status(200).json({ data: response, status: 200 });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error', status: 500 });
     }
 }
 
@@ -56,11 +57,11 @@ async function createProduct(req, res) {
         OUTPUT INSERTED.*
         VALUES (@name, @price, @stock)
       `);
-
-        res.status(201).json(result.recordset[0]);
+        const response = result.recordset[0];
+        res.status(201).json({ data: response, status: 201 });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error', status: 500 });
     }
 }
 
@@ -68,7 +69,7 @@ async function updateProduct(req, res) {
     try {
         const id = parseInt(req.query.id, 10);
         if (isNaN(id)) {
-            return res.status(400).json({ message: 'Invalid id' });
+            return res.status(400).json({ message: 'Invalid id', status: 400 });
         }
 
         const { isValid, errors, price, stock } = validateProductBody(req.body);
@@ -85,7 +86,7 @@ async function updateProduct(req, res) {
             .query('SELECT * FROM PRODUCTS WHERE PRODUCTID = @id');
 
         if (existing.recordset.length === 0) {
-            return res.status(404).json({ message: 'Product not found' });
+            return res.status(404).json({ message: 'Product not found', status: 404 });
         }
 
         const result = await pool
@@ -104,7 +105,7 @@ async function updateProduct(req, res) {
         res.status(200).json(result.recordset[0]);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error', status: 500 });
     }
 }
 
@@ -112,7 +113,7 @@ async function deleteProduct(req, res) {
     try {
         const id = parseInt(req.query.id, 10);
         if (isNaN(id)) {
-            return res.status(400).json({ message: 'Invalid id' });
+            return res.status(400).json({ message: 'Invalid id', status: 400 });
         }
 
         const pool = await getPool();
@@ -126,13 +127,13 @@ async function deleteProduct(req, res) {
       `);
 
         if (result.recordset.length === 0) {
-            return res.status(404).json({ message: 'Product not found' });
+            return res.status(404).json({ message: 'Product not found', status: 404 });
         }
 
-        res.status(200).json({ message: 'Deleted successfully' });
+        res.status(200).json({ message: 'Deleted successfully', status: 200 });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error', status: 500 });
     }
 }
 
