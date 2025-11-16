@@ -44,7 +44,6 @@ async function createProduct(req, res) {
         if (!isValid) {
             return res.status(400).json({ message: 'Validation failed', errors });
         }
-
         const name = req.body.PRODUCTNAME.trim();
         const pool = await getPool();
         const result = await pool
